@@ -1,3 +1,10 @@
+/*
+$ jps  
+  3076 Jps  
+  448 DeadLock  
+$ jstack -l 448 > deadlock.jstack 
+*/
+
 public class c2_2_5 {
 	/*
 	public static Object u = new Object();
