@@ -4,6 +4,50 @@ public class c3_1_1 implements Runnable {
 	public static ReentrantLock lock1 = new ReentrantLock();
 	public static ReentrantLock lock2 = new ReentrantLock();
 	int lock;
+	public c3_1_1(int lock) {this.lock=lock;}
+	public void run() {
+		ReentrantLock first = lock1;
+		ReentrantLock second = lock2;
+		if (lock==2) {
+			first = lock2;
+			second = lock1;
+		} 
+		while (true) {
+			if (first.tryLock()) {
+				try {
+					try {
+						Thread.sleep(500);
+					} catch (InterruptedException e) {}
+					if (second.tryLock()) {
+						try {
+							System.out.println(Thread.currentThread().getId() + " done");
+							return;
+						} finally {
+							second.unlock();
+						}
+					}
+				} finally {
+					first.unlock();
+				}
+			}
+		}
+	}
+	public static void main(String[] args) throws InterruptedException {
+		c3_1_1 r1 = new c3_1_1(1);
+		c3_1_1 r2 = new c3_1_1(2);
+		Thread t1 = new Thread(r1);
+		Thread t2 = new Thread(r2);
+		t1.start();
+		t2.start();
+	}
+}
+
+
+/*
+public class c3_1_1 implements Runnable {
+	public static ReentrantLock lock1 = new ReentrantLock();
+	public static ReentrantLock lock2 = new ReentrantLock();
+	int lock;
 	public c3_1_1(int lock) {
 		this.lock = lock;
 	}
@@ -38,3 +82,4 @@ public class c3_1_1 implements Runnable {
 		t2.interrupt();
 	}
 }
+*/
