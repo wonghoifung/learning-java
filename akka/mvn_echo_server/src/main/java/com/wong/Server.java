@@ -15,15 +15,9 @@ import akka.io.TcpMessage;
 import akka.japi.Procedure;
 import akka.util.ByteString;
 
-
 public class Server extends UntypedActor {
   
-  //final ActorRef manager;
   final ActorRef manager = Tcp.get(getContext().system()).manager();
-  
-  // public Server(ActorRef manager) {
-  //   this.manager = manager;
-  // }
   
   public static Props props(ActorRef manager) {
     return Props.create(Server.class, manager);
@@ -47,6 +41,7 @@ public class Server extends UntypedActor {
       final Connected conn = (Connected) msg;
       manager.tell(conn, getSelf());
       final ActorRef handler = getContext().actorOf(Props.create(SimplisticHandler.class));
+      getContext().system().eventStream().subscribe(handler, Notification.class);
       getSender().tell(TcpMessage.register(handler), getSelf());
     }
   }

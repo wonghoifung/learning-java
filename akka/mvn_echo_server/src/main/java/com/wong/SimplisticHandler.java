@@ -19,11 +19,22 @@ public class SimplisticHandler extends UntypedActor {
   @Override
   public void onReceive(Object msg) throws Exception {
     if (msg instanceof Received) {
+
       final ByteString data = ((Received) msg).data();
       System.out.println(data);
-      getSender().tell(TcpMessage.write(data), getSelf());
+      getContext().system().eventStream().publish(new Notification(getSender(), getSelf(), 1, data));
+
     } else if (msg instanceof ConnectionClosed) {
+
       getContext().stop(getSelf());
+
+    } else if (msg instanceof Notification) {
+
+      Notification noti = (Notification)msg;
+      // TODO while the below statement don't broadcast ?
+      if (noti.id == 1) 
+        noti.sender.tell(TcpMessage.write((ByteString)(noti.obj)), noti.receiver);
+
     }
   }
 }
