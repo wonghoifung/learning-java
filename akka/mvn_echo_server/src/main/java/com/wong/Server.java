@@ -16,7 +16,7 @@ import akka.japi.Procedure;
 import akka.util.ByteString;
 
 public class Server extends UntypedActor {
-  
+
   final ActorRef manager = Tcp.get(getContext().system()).manager();
   
   public static Props props(ActorRef manager) {
@@ -32,17 +32,22 @@ public class Server extends UntypedActor {
   @Override
   public void onReceive(Object msg) throws Exception {
     if (msg instanceof Bound) {
+
       manager.tell(msg, getSelf());
  
     } else if (msg instanceof CommandFailed) {
+
       getContext().stop(getSelf());
     
     } else if (msg instanceof Connected) {
+
       final Connected conn = (Connected) msg;
       manager.tell(conn, getSelf());
       final ActorRef handler = getContext().actorOf(Props.create(SimplisticHandler.class));
       getContext().system().eventStream().subscribe(handler, Notification.class);
+      handler.tell(getSender(), getSelf()); // pass the tcp conn actor 
       getSender().tell(TcpMessage.register(handler), getSelf());
+      
     }
   }
   

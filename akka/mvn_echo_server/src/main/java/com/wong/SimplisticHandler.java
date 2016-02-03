@@ -21,8 +21,8 @@ public class SimplisticHandler extends UntypedActor {
     if (msg instanceof Received) {
 
       final ByteString data = ((Received) msg).data();
-      System.out.println(data);
-      getContext().system().eventStream().publish(new Notification(getSender(), getSelf(), 1, data));
+      //System.out.println(data);
+      getContext().system().eventStream().publish(new Notification(1, data));
 
     } else if (msg instanceof ConnectionClosed) {
 
@@ -31,11 +31,16 @@ public class SimplisticHandler extends UntypedActor {
     } else if (msg instanceof Notification) {
 
       Notification noti = (Notification)msg;
-      // TODO while the below statement don't broadcast ?
       if (noti.id == 1) 
-        noti.sender.tell(TcpMessage.write((ByteString)(noti.obj)), noti.receiver);
+        myTcpActor.tell(TcpMessage.write((ByteString)(noti.obj)), getSelf());
+
+    } else if (msg instanceof ActorRef) {
+
+        myTcpActor = (ActorRef)msg;
 
     }
   }
+
+  private ActorRef myTcpActor;
 }
 
