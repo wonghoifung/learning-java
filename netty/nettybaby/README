@@ -2,3 +2,6 @@ mvn archetype:generate
 mvn package
 mvn compile exec:java -Dexec.mainClass="com.wong.TimeServer"
 java -cp target/nettybaby-1.0-SNAPSHOT.jar com.wong.TimeServer
+
+protoc --java_out=./src/main/java/ SubscribeReq.proto
+protoc --java_out=./src/main/java/ SubscribeResp.proto
