@@ -36,7 +36,7 @@ public class TimeServer
 			arg0.pipeline().addLast(new TimeServerHandler());
 		}
 	}
-    public static void main( String[] args ) throws Exception
+    public static void main( String[] args) throws Exception
     {
         int port = 8080;
         if (args != null && args.length > 0) {
