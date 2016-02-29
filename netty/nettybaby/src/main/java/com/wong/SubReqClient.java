@@ -11,6 +11,8 @@ import io.netty.handler.codec.protobuf.ProtobufVarint32FrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 import io.netty.handler.codec.protobuf.ProtobufDecoder;
 import io.netty.handler.codec.protobuf.ProtobufEncoder; 
+import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
+import io.netty.handler.codec.LengthFieldPrepender;
 
 public class SubReqClient {
 	public void connect(int port, String host) throws Exception {
@@ -22,9 +24,15 @@ public class SubReqClient {
 				.handler(new ChannelInitializer<SocketChannel>() {
 					@Override
 					public void initChannel(SocketChannel ch) throws Exception {
-						ch.pipeline().addLast(new ProtobufVarint32FrameDecoder());
+
+						//ch.pipeline().addLast(new ProtobufVarint32FrameDecoder());
+						ch.pipeline().addLast(new LengthFieldBasedFrameDecoder(1048576, 0, 4, 0, 4));
+
 						ch.pipeline().addLast(new ProtobufDecoder(SubscribeRespProto.SubscribeResp.getDefaultInstance()));
-						ch.pipeline().addLast(new ProtobufVarint32LengthFieldPrepender());
+						
+						//ch.pipeline().addLast(new ProtobufVarint32LengthFieldPrepender());
+						ch.pipeline().addLast(new LengthFieldPrepender(4));
+
 						ch.pipeline().addLast(new ProtobufEncoder());
 						ch.pipeline().addLast(new SubReqClientHandler());
 					}
