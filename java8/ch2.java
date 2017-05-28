@@ -2,11 +2,29 @@ import java.util.*;
 
 public class ch2
 {
+	interface Predicate<T> {
+		boolean test(T t);
+	}
+	public static <T> List<T> filter2(List<T> list, Predicate<T> p) {
+		List<T> result = new ArrayList<>();
+		for (T e:list) {
+			if (p.test(e)) result.add(e);
+		}
+		return result;
+	}
+
 	public static void main(String[] args)
 	{
 		List<Apple> inventory = Arrays.asList(new Apple(80,"green"), new Apple(155, "green"), new Apple(120, "red"));
+
 		List<Apple> greenApples2 = filter(inventory, new AppleColorPredicate());
 		System.out.println(greenApples2);
+
+		List<Apple> redApples2 = filter(inventory, (Apple apple)->"red".equals(apple.getColor()));
+		System.out.println(redApples2);
+
+		List<Apple> heavyApples2 = filter2(inventory, (Apple apple)->apple.getWeight()>150);
+		System.out.println(heavyApples2);
 	}
 	public static List<Apple> filter(List<Apple> inventory, ApplePredicate p){
 		List<Apple> result = new ArrayList<>();
